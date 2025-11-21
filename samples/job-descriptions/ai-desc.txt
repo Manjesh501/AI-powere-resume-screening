@@ -1,0 +1,61 @@
+We’re seeking AI Solution Engineers at all levels who combine strong software engineering acumen with first-principles thinking — people who are relentlessly curious, deeply analytical, and driven to create what’s never been built before.
+
+ 
+
+What you’ll do
+
+·      Design and build AI-powered enterprise solutions that connect and simplify complex systems.
+
+·      Work hands-on with LLMs, Knowledge Graphs, Machine Learning, and Generative AI.
+
+·      Turn ideas and prototypes into scalable, production-grade systems that create real business impact.
+
+·      Collaborate with a cross-functional team combining computer science, enterprise architecture, and applied AI expertise.
+
+ 
+
+What we’re looking for
+
+·       Solid engineering fundamentals (Python, Java, or .NET).
+
+·       Understanding of data systems, APIs, or ML/AI pipelines.
+
+·       The ability to think and build from first principles, not just follow patterns.
+
+·       A mindset driven by curiosity, creativity, and persistence — you love turning deep ideas into real products.
+
+
+
+Nice to Have:
+
+·      Experience with cloud infrastructure (Azure, AWS, or GCP).
+
+·      Familiarity with vector databases, LangChain, or MLOps tools.
+
+·      Exposure to enterprise integration or data orchestration frameworks.
+
+ 
+
+Beyond Skills — What Truly Matters
+
+ We need people who:
+
+Own their work — You see things through and make things happen.
+
+ Adapt quickly — Startup life means wearing different hats
+
+Stay curious — You actually enjoy learning new tools
+
+ 
+
+Why You’ll Love Working with PristineAI
+
+·       Be part of a startup shaping the future of enterprise AI.
+
+·       Collaborate with AI engineers and domain experts, solving real business challenges.
+
+·       Enjoy 2 weeks of annual learning leave to upskill and explore.
+
+·       Competitive pay, equity, and health coverage.
+
+·       Thrive in an inclusive, high-trust, continuous learning environment.

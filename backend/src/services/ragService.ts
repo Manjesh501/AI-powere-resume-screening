@@ -10,7 +10,6 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
 const PREFERRED_MODELS = [
   'models/gemini-2.5-flash-lite',  // 0/15 RPM - Medium quota lite model
   'models/gemini-2.0-flash-lite', // 0/30 RPM - High quota lite model
-
   'models/gemini-2.0-flash',      
   'models/gemini-2.5-flash',      
   'models/gemini-2.5-pro', 
@@ -22,6 +21,8 @@ let workingModelName: string = '';
 
 // Simple in-memory storage for embeddings (in production, use a proper vector database)
 const vectorStore: Record<string, any[]> = {};
+// Make vectorStore globally accessible for debugging
+(global as any).vectorStore = vectorStore;
 
 // Get or initialize the best available model
 async function getBestModel() {
@@ -38,32 +39,40 @@ async function getBestModel() {
     try {
       console.log(`🧪 Testing model: ${modelName}`);
       const model = genAI.getGenerativeModel({ model: modelName });
-      // Test the model with a simple request
-      await model.generateContent('Hello');
-      console.log(`✅ Model ${modelName} is available and working`);
-      workingModel = model;
-      workingModelName = modelName;
-      return { model, modelName };
+      
+      // Test the model with a simple prompt
+      const testPrompt = "Respond with exactly: 'Model test successful'";
+      try {
+        const result = await model.generateContent(testPrompt);
+        const response = await result.response;
+        const text = response.text();
+        
+        if (text.includes('Model test successful')) {
+          console.log(`✅ Model ${modelName} is working`);
+          workingModel = model;
+          workingModelName = modelName;
+          return { model, modelName };
+        }
+      } catch (testError) {
+        console.log(`⚠️  Model ${modelName} test failed: ${(testError as Error).message}`);
+      }
     } catch (error) {
       console.log(`⚠️  Model ${modelName} not available: ${(error as Error).message}`);
-      continue;
     }
   }
   
-  // If none of our preferred models work, try to get any available model
-  try {
-    console.log('🔄 Trying to list available models...');
-    // As a fallback, try the project default model
-    const fallbackModelName = 'models/gemini-2.0-flash';
-    console.log(`🧪 Testing fallback model: ${fallbackModelName}`);
-    const model = genAI.getGenerativeModel({ model: fallbackModelName });
-    await model.generateContent('Hello');
-    console.log(`✅ Fallback model ${fallbackModelName} is working`);
-    workingModel = model;
-    workingModelName = fallbackModelName;
-    return { model, modelName: fallbackModelName };
-  } catch (error) {
-    console.log(`⚠️  Fallback model also failed: ${(error as Error).message}`);
+  // Fallback to the first available model if all others fail
+  for (const modelName of PREFERRED_MODELS) {
+    try {
+      console.log(`🔄 Falling back to model: ${modelName}`);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      workingModel = model;
+      workingModelName = modelName;
+      return { model, modelName };
+    } catch (fallbackError) {
+      console.log(`⚠️  Fallback model ${modelName} also failed: ${(fallbackError as Error).message}`);
+      continue;
+    }
   }
   
   console.log('💥 No available models found');
@@ -114,26 +123,30 @@ export const generateEmbeddings = async (chunks: string[]): Promise<any[]> => {
   console.log(`🧠 Generating embeddings for ${chunks.length} chunks`);
   const startTime = Date.now();
   
+  // Validate input
+  if (!chunks || chunks.length === 0) {
+    console.log('⚠️  No chunks to generate embeddings for');
+    return [];
+  }
+  
   try {
+    // Get the best available model
     const { model, modelName } = await getBestModel();
-    console.log(`🤖 Using model ${modelName} for embedding generation`);
     
+    // Validate model
+    if (!model) {
+      console.error('💥 No model available for embedding generation');
+      throw new Error('No model available for embedding generation');
+    }
+    
+    // Generate real embeddings using the embedding API
     const embeddings = [];
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
-      const chunkStartTime = Date.now();
-      
       try {
-        console.log(`📝 Processing chunk ${i + 1}/${chunks.length} (${chunk.length} chars)`);
-        
-        // Generate a pseudo-embedding using Gemini (in practice, you'd use an embedding model)
-        const prompt = `Generate a numerical representation for this text: "${chunk}". Respond with only numbers separated by commas.`;
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        
-        // Parse the response into numbers
-        const embedding = text.split(',').map((num: string) => parseFloat(num.trim()) || 0);
+        // Generate embedding for this chunk
+        const embeddingResult = await model.embedContent(chunk);
+        const embedding = embeddingResult.embedding.values;
         
         embeddings.push({
           id: i,
@@ -141,14 +154,25 @@ export const generateEmbeddings = async (chunks: string[]): Promise<any[]> => {
           embedding: embedding
         });
         
-        console.log(`✅ Chunk ${i + 1} processed in ${Date.now() - chunkStartTime}ms`);
-      } catch (chunkError: any) {
-        console.error(`💥 Error processing chunk ${i + 1}:`, chunkError.message);
+        // Small delay to avoid rate limiting
+        if (i < chunks.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 5));
+        }
+      } catch (chunkError) {
+        console.warn(`⚠️  Failed to generate embedding for chunk ${i}, using mock embedding:`, chunkError);
         // Fallback to mock embedding for this chunk
+        const mockEmbedding = Array(768).fill(0).map((_, j) => {
+          let hash = 0;
+          for (let k = 0; k < chunk.length; k++) {
+            hash = ((hash << 5) - hash + chunk.charCodeAt(k) + j) & 0xffffffff;
+          }
+          return (hash % 10000) / 10000;
+        });
+        
         embeddings.push({
           id: i,
           text: chunk,
-          embedding: Array(100).fill(0).map(() => Math.random())
+          embedding: mockEmbedding
         });
       }
     }
@@ -157,11 +181,11 @@ export const generateEmbeddings = async (chunks: string[]): Promise<any[]> => {
     return embeddings;
   } catch (error) {
     console.error('💥 Error generating embeddings:', error);
-    // Fallback to mock implementation
+    // Fallback to completely random embeddings
     return chunks.map((chunk, index) => ({
       id: index,
       text: chunk,
-      embedding: Array(100).fill(0).map(() => Math.random())
+      embedding: Array(768).fill(0).map(() => Math.random())
     }));
   }
 };
@@ -183,27 +207,32 @@ export const searchEmbeddings = async (query: string, analysisId: string): Promi
   console.log(`🔍 Searching embeddings for query: "${query}" in analysis ${analysisId}`);
   const startTime = Date.now();
   
+  // Validate inputs
+  if (!query || !analysisId) {
+    console.log('⚠️  Missing query or analysisId for embedding search');
+    return [];
+  }
+  
   try {
-    const { model, modelName } = await getBestModel();
-    console.log(`🤖 Using model ${modelName} for query embedding generation`);
-    
-    // Generate embedding for the query
-    const prompt = `Generate a numerical representation for this text: "${query}". Respond with only numbers separated by commas.`;
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const queryText = response.text();
-    
-    // Parse the response into numbers
-    const queryEmbedding = queryText.split(',').map((num: string) => parseFloat(num.trim()) || 0);
-    
     // Search for similar embeddings in both resume and job description
     const resumeEmbeddings = vectorStore[`${analysisId}_resume`] || [];
     const jobEmbeddings = vectorStore[`${analysisId}_job`] || [];
     const allEmbeddings = [...resumeEmbeddings, ...jobEmbeddings];
     
-    console.log(`📊 Searching through ${allEmbeddings.length} embeddings`);
+    console.log(`📊 Searching through ${allEmbeddings.length} embeddings (${resumeEmbeddings.length} resume, ${jobEmbeddings.length} job)`);
+    console.log(`📊 Available analysis IDs in vector store: ${Object.keys(vectorStore).join(', ')}`);
     
-    // Simple cosine similarity calculation
+    // Validate that we have embeddings to search
+    if (allEmbeddings.length === 0) {
+      console.log(`⚠️  No embeddings found for analysis ${analysisId}`);
+      return [];
+    }
+    
+    // Generate embedding for the query
+    const { model } = await getBestModel();
+    const queryEmbeddingResult = await model.embedContent(query);
+    const queryEmbedding = queryEmbeddingResult.embedding.values;
+    
     const similarities = allEmbeddings.map(embedding => {
       const similarity = cosineSimilarity(queryEmbedding, embedding.embedding);
       return { ...embedding, similarity };
@@ -239,77 +268,54 @@ export const generateResponse = async (question: string, context: any[]): Promis
   console.log(`💬 Generating response for question: "${question}"`);
   const startTime = Date.now();
   
+  // Validate inputs
+  if (!question || !context) {
+    console.log('⚠️  Missing question or context for response generation');
+    throw new Error('Missing question or context for response generation');
+  }
+  
+  // Validate context
+  if (!Array.isArray(context) || context.length === 0) {
+    console.log('⚠️  No context provided for response generation');
+    throw new Error('No context available to answer this question');
+  }
+  
   try {
+    // Get the best available model
     const { model, modelName } = await getBestModel();
-    console.log(`🤖 Using model ${modelName} for response generation`);
     
+    // Validate model
+    if (!model) {
+      console.error('💥 No model available for response generation');
+      throw new Error('No model available for response generation');
+    }
+    
+    // Prepare the context text from retrieved embeddings
     const contextText = context.map(item => item.text || item).join('\n\n');
-    const prompt = `Based on the following context, please answer the question: "${question}"
-
-Context:
-${contextText}
-
-Answer in a concise and focused manner. Provide only the most relevant information. Format as a list if appropriate. Keep the response under 100 words.`;
     
+    // Create a prompt that uses the context to answer the question
+    const prompt = `You are an expert HR analyst and technical recruiter. Based on the provided resume context, please answer the following question accurately and specifically.
+
+Context from resume:
+"${contextText}"
+
+Question: "${question}"
+
+Please provide a detailed, accurate answer based ONLY on the information provided in the context above. If the information is not available in the context, please state that clearly. Be specific and provide examples when possible.`;
+    
+    console.log(`🤖 Generating response using model: ${modelName}`);
+    
+    // Generate response using the LLM with the context
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const answer = response.text();
     
     console.log(`✅ Response generated in ${Date.now() - startTime}ms`);
+    console.log(`📝 Generated response: "${answer.substring(0, 100)}..."`);
+    
     return answer;
   } catch (error) {
     console.error('💥 Error generating response:', error);
-    // Fallback to a more concise response based on the context
-    const contextText = context.map(item => item.text || item).join('\n\n');
-    
-    // Extract skills, experience, and education more effectively
-    const skillsPattern = /(?:skills|technical skills|proficiency|knowledge|familiarity|experience):\s*([^\n\r]+)/i;
-    const experiencePattern = /(?:experience|professional experience|work experience):\s*([^\n\r]+)/i;
-    const educationPattern = /(?:education|degree|bachelor|master):\s*([^\n\r]+)/i;
-    
-    const skillsMatch = contextText.match(skillsPattern);
-    const experienceMatch = contextText.match(experiencePattern);
-    const educationMatch = contextText.match(educationPattern);
-    
-    // For the specific question about skills, provide a focused answer
-    if (question.toLowerCase().includes('skill')) {
-      if (skillsMatch) {
-        // Extract individual skills from the skills section
-        const skillsText = skillsMatch[1];
-        const skillItems = skillsText.split(/[,;]|and/i).map(skill => skill.trim()).filter(skill => skill.length > 0);
-        return `Key skills: ${skillItems.slice(0, 5).join(', ')}`;
-      } else {
-        // Fallback to extracting common technical terms
-        const technicalTerms = ['AWS', 'GCP', 'Kubernetes', 'Docker', 'Terraform', 'Python', 'Bash', 'Linux', 
-                              'Jenkins', 'GitLab', 'CI/CD', 'Monitoring', 'Prometheus', 'Grafana', 'Cloud'];
-        const foundSkills = technicalTerms.filter(term => 
-          contextText.toLowerCase().includes(term.toLowerCase())
-        );
-        if (foundSkills.length > 0) {
-          return `Identified skills: ${foundSkills.slice(0, 5).join(', ')}`;
-        }
-      }
-    }
-    
-    // For general questions, provide a concise summary
-    let fallbackResponse = '';
-    
-    if (skillsMatch) {
-      fallbackResponse += `Skills: ${skillsMatch[1].substring(0, 50)}...\n`;
-    }
-    
-    if (experienceMatch) {
-      fallbackResponse += `Experience: ${experienceMatch[1].substring(0, 50)}...\n`;
-    }
-    
-    if (educationMatch) {
-      fallbackResponse += `Education: ${educationMatch[1].substring(0, 50)}...\n`;
-    }
-    
-    if (!fallbackResponse) {
-      fallbackResponse = "Based on the provided context, I can see information about a candidate. For your specific question, I would need more detailed context to provide a precise answer.";
-    }
-    
-    return fallbackResponse.trim();
+    throw error;
   }
 };

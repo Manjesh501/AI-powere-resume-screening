@@ -6,6 +6,8 @@ import { processDocument, generateEmbeddings, storeEmbeddings } from '../service
 // In-memory storage for demo purposes (would use a database in production)
 // Add a cache for processed analyses to improve performance
 const analysisStorage: Record<string, any> = {};
+// Make analysisStorage globally accessible for debugging
+(global as any).analysisStorage = analysisStorage;
 const processingQueue: Set<string> = new Set();
 
 export const uploadFiles = async (req: Request, res: Response) => {
@@ -46,6 +48,9 @@ export const uploadFiles = async (req: Request, res: Response) => {
     };
     
     console.log(`✅ Files uploaded successfully for analysis ${analysisId}`);
+    
+    // Add a small delay to ensure the analysis record is properly stored
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     res.status(200).json({
       message: 'Files uploaded successfully',

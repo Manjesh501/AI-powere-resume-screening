@@ -510,19 +510,47 @@ function generateBasicAnalysis(resumeText: string, jobDescriptionText: string): 
     }
   }
   
-  const score = jobSkills.length > 0 ? Math.round((matchedSkills.length / jobSkills.length) * 100) : 0;
+  // Calculate a more dynamic score based on actual matches
+  const baseScore = jobSkills.length > 0 ? Math.round((matchedSkills.length / jobSkills.length) * 100) : 0;
+  
+  // Adjust score based on the quality of matches
+  // If we have many matches, increase the score slightly
+  // If we have few matches, decrease the score slightly
+  let adjustedScore = baseScore;
+  if (matchedSkills.length > jobSkills.length * 0.8) {
+    adjustedScore = Math.min(100, baseScore + 5); // Boost for high match rate
+  } else if (matchedSkills.length < jobSkills.length * 0.3) {
+    adjustedScore = Math.max(0, baseScore - 5); // Reduce for low match rate
+  }
   
   // Create insights as strings
   const insights: string[] = [
-    `Match score: ${score}%. ${score >= 80 ? 'Strong match' : score >= 60 ? 'Moderate match' : 'Weak match'} for this role.`,
+    `Match score: ${adjustedScore}%. ${adjustedScore >= 80 ? 'Strong match' : adjustedScore >= 60 ? 'Moderate match' : 'Weak match'} for this role.`,
     `Key strengths: ${matchedSkills.slice(0, 5).join(', ')}`,
     `Missing skills: ${unmatchedSkills.slice(0, 5).join(', ')}`
   ];
   
+  // Extract some achievements from the resume for more dynamic content
+  const achievementLines = resumeText.split('\n').filter(line => {
+    const lowerLine = line.toLowerCase();
+    return (
+      lowerLine.includes('project') || 
+      lowerLine.includes('achievement') ||
+      lowerLine.includes('accomplishment') ||
+      lowerLine.includes('implemented') ||
+      lowerLine.includes('developed') ||
+      lowerLine.includes('created') ||
+      lowerLine.includes('built') ||
+      lowerLine.includes('designed')
+    ) && line.length > 20;
+  });
+  
+  const sampleAchievements = achievementLines.slice(0, 2);
+  
   // Create a structured analysis even for the fallback
   return {
-    overallMatch: `${score}%`,
-    summary: `Based on skill matching analysis, you have ${matchedSkills.length} out of ${jobSkills.length} required skills. You are a ${score >= 80 ? 'strong' : score >= 60 ? 'moderate' : 'weak'} match for this role.`,
+    overallMatch: `${adjustedScore}%`,
+    summary: `Based on skill matching analysis, you have ${matchedSkills.length} out of ${jobSkills.length} required skills. You are a ${adjustedScore >= 80 ? 'strong' : adjustedScore >= 60 ? 'moderate' : 'weak'} match for this role.`,
     skillsBreakdown: {
       coreCloud: {
         title: "Key Skills Analysis",
@@ -549,14 +577,17 @@ function generateBasicAnalysis(resumeText: string, jobDescriptionText: string): 
     improvements: [
       "Focus on developing the missing skills to improve your match score.",
       "Consider gaining practical experience through projects or internships.",
-      "Tailor your resume to better highlight your existing skills and experience."
-    ],
+      sampleAchievements.length > 0 ? 
+        `Notable achievements from resume: ${sampleAchievements[0].substring(0, 100)}...` :
+        "Highlight your achievements and projects more prominently in your resume.",
+      "Tailor your resume to better match the job description requirements."
+    ].filter(insight => insight.length > 0),
     finalVerdict: {
-      technicalSkills: `${score}% match`,
+      technicalSkills: `${adjustedScore}% match`,
       projectsAlignment: "N/A",
       cloudRequirements: "N/A",
       devOpsTooling: "N/A",
-      overallReadiness: `${score}%`,
+      overallReadiness: `${adjustedScore}%`,
       assessment: "Analysis completed with basic matching. For a more detailed analysis, ensure your API key is configured correctly."
     }
   };

@@ -22,7 +22,20 @@ const ChatInterface = ({ analysisId }: ChatInterfaceProps) => {
   useEffect(() => {
     const loadChatHistory = async () => {
       try {
+        // Validate analysisId
+        if (!analysisId) {
+          console.log('⚠️  No analysisId provided for chat history');
+          return;
+        }
+        
         const response = await getChatHistory(analysisId);
+        
+        // Validate response
+        if (!response) {
+          console.log('⚠️  No response from chat history endpoint');
+          return;
+        }
+        
         if (response.history && response.history.length > 0) {
           const historyMessages = response.history.flatMap((entry: ChatEntry) => [
             { text: entry.question, isUser: true },
@@ -30,8 +43,9 @@ const ChatInterface = ({ analysisId }: ChatInterfaceProps) => {
           ]);
           setMessages(historyMessages);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading chat history:', error);
+        // Don't show error to user for chat history, just log it
       }
     };
 
@@ -50,15 +64,21 @@ const ChatInterface = ({ analysisId }: ChatInterfaceProps) => {
     try {
       // Send question to backend and get response from RAG system
       const response = await askQuestion(analysisId, question);
+      
+      // Validate response
+      if (!response || !response.answer) {
+        throw new Error('Invalid response from server');
+      }
+      
       const botMessage = { 
         text: response.answer, 
         isUser: false 
       };
       setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error asking question:', error);
       const errorMessage = { 
-        text: "Sorry, I encountered an error while processing your question. Please try again.", 
+        text: `Sorry, I encountered an error: ${error.message || 'Unknown error'}. Please try again.`, 
         isUser: false 
       };
       setMessages(prev => [...prev, errorMessage]);

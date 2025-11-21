@@ -27,29 +27,39 @@ const HomePage = () => {
       const uploadResponse = await uploadFiles(formData);
       const { analysisId } = uploadResponse;
       
-      // Retry mechanism for analysis
+      // Improved retry mechanism for analysis with better error handling
       let analysisSuccess = false;
       let retries = 0;
-      const maxRetries = 5;
+      const maxRetries = 8; // Increased retries
+      const baseDelay = 1500; // Base delay of 1.5 seconds
       
       while (!analysisSuccess && retries < maxRetries) {
         try {
+          console.log(`Attempt ${retries + 1} to analyze resume...`);
           // Start analysis
           await analyzeResume(analysisId);
           analysisSuccess = true;
+          console.log('Analysis successful!');
           // Navigate to analysis page
           navigate(`/analysis/${analysisId}`);
         } catch (error: any) {
           retries++;
           console.error(`Attempt ${retries} failed:`, error);
           
+          // If it's a 404 error, wait longer as it might be a timing issue
+          if (error.message && error.message.includes('404')) {
+            console.log('404 error detected, waiting longer before retry...');
+          }
+          
           // If it's the last retry, show the error
           if (retries >= maxRetries) {
             throw new Error(`Analysis failed after ${maxRetries} attempts: ${error.message}`);
           }
           
-          // Wait before retrying
-          await new Promise(resolve => setTimeout(resolve, 2000 * retries));
+          // Exponential backoff with jitter
+          const delay = baseDelay * Math.pow(1.5, retries) + Math.random() * 1000;
+          console.log(`Waiting ${Math.round(delay)}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     } catch (error: any) {
@@ -83,6 +93,10 @@ const HomePage = () => {
       >
         {isUploading ? 'Analyzing...' : 'Analyze Resume'}
       </button>
+      
+      <div className="info-section">
+        <p><strong>Note:</strong> Analysis may take a few moments. Please be patient.</p>
+      </div>
     </div>
   );
 };
