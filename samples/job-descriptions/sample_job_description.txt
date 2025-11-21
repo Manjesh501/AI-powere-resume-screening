@@ -1,0 +1,53 @@
+Senior Backend Engineer
+
+Company: TechStart Inc.
+Location: Remote
+
+POSITION OVERVIEW
+-----------------
+We are seeking a Senior Backend Engineer to join our growing engineering team. You will be responsible for 
+designing, developing, and maintaining scalable backend services that power our platform. The ideal 
+candidate has extensive experience with Node.js, microservices architecture, and cloud technologies.
+
+RESPONSIBILITIES
+----------------
+• Design and implement high-performance, scalable backend services using Node.js
+• Develop and maintain RESTful APIs consumed by web and mobile applications
+• Collaborate with frontend engineers to integrate user-facing elements with server-side logic
+• Optimize applications for maximum speed and scalability
+• Implement security and data protection measures
+• Participate in code reviews and contribute to engineering best practices
+• Mentor junior developers and contribute to team growth
+
+REQUIREMENTS
+------------
+• Bachelor's degree in Computer Science, Engineering, or equivalent experience
+• 5+ years of experience in backend development
+• Proficiency in Node.js, Express, and related frameworks
+• Experience with microservices architecture and distributed systems
+• Strong knowledge of database design and management (PostgreSQL, MongoDB)
+• Familiarity with cloud platforms (AWS, GCP, or Azure)
+• Experience with containerization technologies (Docker, Kubernetes)
+• Understanding of RESTful APIs and web services
+• Knowledge of testing frameworks and CI/CD pipelines
+• Strong problem-solving skills and attention to detail
+
+NICE TO HAVE
+------------
+• Experience with React or other frontend frameworks
+• Knowledge of message queues (RabbitMQ, Kafka)
+• Familiarity with monitoring and logging tools (Prometheus, Grafana)
+• Experience with GraphQL
+• Understanding of machine learning concepts
+
+BENEFITS
+--------
+• Competitive salary and equity package
+• Comprehensive health, dental, and vision insurance
+• Flexible work schedule and remote work options
+• Professional development budget
+• Unlimited PTO policy
+• 401(k) matching program
+
+TechStart Inc. is an equal opportunity employer. We celebrate diversity and are committed to creating an 
+inclusive environment for all employees.

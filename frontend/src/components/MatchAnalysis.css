@@ -1,0 +1,185 @@
+.match-analysis {
+  margin-bottom: 30px;
+}
+
+.score-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.score-circle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  margin: 0 auto;
+}
+
+.score {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+}
+
+.score-label {
+  font-size: 18px;
+  color: #666;
+}
+
+.score-display {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.score-display div {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.analysis-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.section {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-bottom: 20px;
+}
+
+.section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.section h4 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.section li {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+/* Structured Analysis Styles */
+.category {
+  margin-bottom: 20px;
+}
+
+.category h4 {
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.category table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.category th,
+.category td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.category th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.alignment ul {
+  padding-left: 20px;
+}
+
+.alignment li {
+  margin-bottom: 8px;
+}
+
+.strong li {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.medium li {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.weak li {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.projects-relevance table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.projects-relevance th,
+.projects-relevance td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.projects-relevance th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.improvement-item {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
+}
+
+.improvement-item h4 {
+  margin-top: 0;
+  color: #007bff;
+}
+
+.final-verdict ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.final-verdict li {
+  padding: 8px;
+  margin-bottom: 5px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.summary {
+  background-color: #e9f7ef;
+  border-left: 4px solid #28a745;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.summary p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}

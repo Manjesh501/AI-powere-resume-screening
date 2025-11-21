@@ -1,0 +1,32 @@
+Responsibilities
+
+Assist in managing multiregion and multicloud infrastructure, ensuring resiliency, scalability, and performance.
+Support infrastructure provisioning and deployments primarily on GCP, while gaining exposure to other cloud providers.
+Collaborate with development teams to design and maintain CI/CD pipelines in GitLab CI.
+Work on Kubernetes cluster management (GKE and potentially other managed K8s offerings).
+Contribute to GitOps-based deployments using ArgoCD.
+Help automate infrastructure with Terraform and other infrastructure-as-code tools.
+Monitor system health and participate in the on-call rotation, contributing to incident response, troubleshooting, and root cause analysis to improve reliability.
+Document processes, create runbooks, and help improve operational practices.
+Qualifications
+
+Bachelor’s degree in Computer Science, Information Technology, or related field (or equivalent practical experience).
+1+ years of hands-on experience in DevOps, SRE, or related roles.
+Solid foundation in Linux/Unix administration and basic networking.
+Hands-on experience with public cloud services (Compute Engine, GKE, Cloud Storage, IAM, VPC etc).
+Understanding of Kubernetes concepts.
+Familiarity with CI/CD concepts and ArgoCD for GitOps workflows.
+Interest or exposure to multicloud and multiregion architectures.
+Strong analytical, troubleshooting, and problem-solving skills.
+Scripting experience with Python, Bash, or Go.
+Knowledge of infrastructure-as-code (Terraform, Ansible, or CloudFormation).
+Familiarity with monitoring and logging tools (Prometheus, Grafana, ELK, or GCP Cloud Monitoring/Logging).
+Understanding of distributed systems design and global traffic management.
+Awareness of security and compliance best practices in a cloud-native environment.
+What We Offer
+
+A collaborative environment with mentorship opportunities.
+Exposure to large-scale, multiregion, and multicloud infrastructure challenges.
+Hands-on experience with modern DevOps tooling and cloud-native technologies.
+A structured growth path to advance into mid-level and senior DevOps engineering roles.
+Benefits & Perks

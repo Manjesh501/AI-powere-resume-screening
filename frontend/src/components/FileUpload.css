@@ -1,0 +1,23 @@
+.file-upload {
+  margin-bottom: 20px;
+}
+
+.file-upload label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.upload-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+}
+
+.file-name {
+  flex: 1;
+  color: #666;
+}

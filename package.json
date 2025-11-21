@@ -1,0 +1,20 @@
+{
+  "name": "assignment",
+  "version": "1.0.0",
+  "description": "A simple AI-powered Resume Screening Tool where recruiters can upload a resume and job description, then get an instant match score with the ability to ask questions about the candidate via chat.",
+  "main": "test_api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "form-data": "^4.0.5",
+    "pdf-parse": "^2.4.5",
+    "pdfkit": "^0.17.2"
+  }
+}

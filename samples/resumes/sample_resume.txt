@@ -1,0 +1,48 @@
+John Doe
+Email: john.doe@example.com | Phone: (555) 123-4567 | Location: San Francisco, CA
+
+SUMMARY
+-------
+Experienced Software Engineer with 5 years of expertise in React, Node.js, and cloud technologies. 
+Skilled in building scalable web applications and leading development teams. Strong background in 
+backend architecture and database design.
+
+TECHNICAL SKILLS
+----------------
+Languages: JavaScript, TypeScript, Python, SQL
+Frameworks: React.js, Node.js, Express, Redux
+Databases: MongoDB, PostgreSQL
+Tools: Git, Docker, AWS (EC2, S3), Jest
+Other: RESTful APIs, Microservices, Agile/Scrum
+
+PROFESSIONAL EXPERIENCE
+-----------------------
+Senior Software Engineer | TechCorp | San Francisco, CA | Jan 2020 - Present
+• Led development of a customer portal using React and Node.js, resulting in 40% increase in user engagement
+• Designed and implemented microservices architecture that improved system scalability by 60%
+• Mentored junior developers and conducted code reviews for a team of 8 engineers
+• Integrated AWS services for cloud deployment, reducing infrastructure costs by 30%
+
+Software Engineer | InnovateX | San Francisco, CA | Jun 2018 - Dec 2019
+• Developed RESTful APIs using Node.js and Express, serving 100K+ daily active users
+• Built responsive UI components with React.js, improving page load speed by 25%
+• Collaborated with product managers to translate business requirements into technical solutions
+• Implemented automated testing with Jest, increasing code coverage to 90%
+
+EDUCATION
+---------
+Bachelor of Science in Computer Science | University of California, Berkeley | 2014 - 2018
+• Relevant Coursework: Data Structures, Algorithms, Database Systems, Software Engineering
+• GPA: 3.7/4.0
+
+PROJECTS
+--------
+E-Commerce Platform | Personal Project
+• Built a full-stack e-commerce application using React, Node.js, and MongoDB
+• Implemented user authentication, payment processing, and inventory management
+• Deployed on AWS with Docker containers for easy scaling
+
+Task Management App | Hackathon Winner
+• Developed a collaborative task management tool during a 24-hour hackathon
+• Utilized WebSockets for real-time updates and React for the frontend
+• Won 1st place for "Most Innovative Solution"
